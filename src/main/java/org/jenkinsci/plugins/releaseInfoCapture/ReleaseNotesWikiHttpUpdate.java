@@ -77,8 +77,13 @@ public class ReleaseNotesWikiHttpUpdate {
 		         + "<ac:structured-macro ac:name='gallery'>"
 		         + "<ac:parameter ac:name='columns'>1</ac:parameter>"
 		         + "</ac:structured-macro>" + "</p>";
-		String json = "{\"type\":\"page\",\"title\":\"" + testpage + "\",\"space\":{\"key\":\"ds\"},\"body\":{\"storage\":{\"value\":\"" + text + "\",\"representation\":\"storage\"}}}";
-	
+		
+		GenerateParentPage gpp = new GenerateParentPage();
+		Long parentid = gpp.GetParentPage(listener);
+		
+		//String json = "{\"type\":\"page\",\"title\":\"" + testpage + "\",\"space\":{\"key\":\"ds\"},\"body\":{\"storage\":{\"value\":\"" + text + "\",\"representation\":\"storage\"}}}";
+		String json = "{\"type\":\"page\",\"ancestors\":[{\"type\":\"page\",\"id\":" + parentid + "}],\"title\":\"" + testpage + "\",\"space\":{\"key\":\"ds\"},\"body\":{\"storage\":{\"value\":\"" + text + "\",\"representation\":\"storage\"}}}";
+		
 		// Find Page and get value of size. If size equals 0 - Page doesn't exist. If size not equals 0 - Page Exist
 		System.out.println("INFO : Checking Page Existence");
 		listener.getLogger().println("INFO : Checking Page Existence");
@@ -185,8 +190,8 @@ public class ReleaseNotesWikiHttpUpdate {
 				 
 					putpage.getJSONObject("body").getJSONObject("storage").put("value", puttext);
 					
-					System.out.println("INFO : Incrementing Version for the generated page");
-					listener.getLogger().println("INFO : Incrementing Version for the generated page");
+					System.out.println("INFO : Incrementing Version for the Generated Page");
+					listener.getLogger().println("INFO : Incrementing Version for the Generated Page");
 					int currentVersion = putpage.getJSONObject("version").getInt("number");
 					putpage.getJSONObject("version").put("number", currentVersion + 1);
 				
@@ -209,6 +214,8 @@ public class ReleaseNotesWikiHttpUpdate {
 						put1PageEntity = putPageResponse.getEntity();
 						System.out.println("SUCCESS : Page Generated successfully with Jenkins job environment variables");
 						listener.getLogger().println("SUCCESS : Page Generated successfully with Jenkins job environment variables");
+						listener.getLogger().println("Release Info Page URL : " + BASE_URL + "/display/ds/" + testpagecoder);
+						listener.getLogger().println("");
 				 
 					} finally {
 						EntityUtils.consume(put1PageEntity);
@@ -319,6 +326,8 @@ public class ReleaseNotesWikiHttpUpdate {
 		 put1PageEntity = putPageResponse.getEntity();
 		 System.out.println("SUCCESS : Page Appended successfully with Jenkins job environment variables");
 		 listener.getLogger().println("SUCCESS : Page Appended successfully with Jenkins job environment variables");
+		 listener.getLogger().println("Release Info Page URL : " + BASE_URL + "/display/ds/" + testpagecoder);
+		 listener.getLogger().println("");
 		 
 		 } finally {
 		 EntityUtils.consume(put1PageEntity);

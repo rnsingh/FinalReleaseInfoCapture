@@ -9,6 +9,7 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Action;
 import hudson.model.BuildListener;
+import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tasks.Builder;
@@ -31,6 +32,8 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.io.*;
 
 import org.json.simple.JSONArray;
@@ -108,6 +111,15 @@ public class ReleaseInfoCapturePublisher extends Recorder {
         }
 
         CHNG = envVars.get("CHNG");
+        
+        if (CHNG == "" || name == "")
+        {
+        	System.out.println("Provided inputs are empty or incorrect");
+        	listener.finished(Result.FAILURE);
+            return false;
+        }
+        else
+        {
         message="Hello, " + name + "!";
         
         listener.getLogger().println("CHNG          	: " + CHNG);
@@ -132,6 +144,7 @@ public class ReleaseInfoCapturePublisher extends Recorder {
         	e.printStackTrace();
         }
         return true;
+        }
     }
 
     @Override
@@ -153,10 +166,17 @@ public class ReleaseInfoCapturePublisher extends Recorder {
 
         public FormValidation doCheckName(@QueryParameter String value)
                 throws IOException, ServletException {
+        	
+        	Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
+        	Matcher m = p.matcher(value);
+        	boolean b = m.find();
+        	
             if (value.length() == 0)
                 return FormValidation.error("Please provide an Application name");
             if (value.length() < 4)
                 return FormValidation.warning("Isn't the name too short?");
+            if (b)
+            	return FormValidation.error("No special characters allowed");
             return FormValidation.ok();
         }
 
@@ -181,4 +201,3 @@ public class ReleaseInfoCapturePublisher extends Recorder {
 
     }
 }
-I
