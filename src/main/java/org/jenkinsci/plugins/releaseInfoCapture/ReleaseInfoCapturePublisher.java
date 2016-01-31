@@ -72,6 +72,10 @@ public class ReleaseInfoCapturePublisher extends Recorder {
         
         EnvVars envVars = new EnvVars();
         envVars = build.getEnvironment(listener);
+        Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
+    	Matcher m = p.matcher(name);
+    	boolean b = m.find();
+    	
         jobName = envVars.get("JOB_NAME");
         
         // Get git/svn commit revision
@@ -112,34 +116,48 @@ public class ReleaseInfoCapturePublisher extends Recorder {
 
         CHNG = envVars.get("CHNG");
         
-        if (CHNG == "" || name == "")
+        if (CHNG == null || name == null)
         {
         	System.out.println("Provided inputs are empty or incorrect");
+        	listener.error("Provided inputs are empty or incorrect");
+        	listener.finished(Result.FAILURE);
+            return false;
+        }else if(b)
+        {
+        	System.out.println("No special characters are allowed");
+        	listener.error("No special characters are allowed");
         	listener.finished(Result.FAILURE);
             return false;
         }
         else
         {
-        message="Hello, " + name + "!";
+
+        listener.getLogger().println("");
+        listener.getLogger().println("------ RELEASE INFO CAPTURE STARTED ------");
+        listener.getLogger().println("");
         
-        listener.getLogger().println("CHNG          	: " + CHNG);
+        listener.getLogger().println("CHNG			: " + CHNG);
         listener.getLogger().println("JOB NAME  		: " + jobName);
         listener.getLogger().println("BUILD REVISION  	: " + buildRevision);
         listener.getLogger().println("BRANCH/TAG	 	: " + buildTag);
-        listener.getLogger().println("BUILD URL	 		: " + buildURL);
+        listener.getLogger().println("BUILD URL		: " + buildURL);
         listener.getLogger().println("APPLICATION NAME 	: " + name);
+        listener.getLogger().println("");
         
-        System.out.println("CHNG          		: " + CHNG);
+        System.out.println("CHNG          			: " + CHNG);
         System.out.println("JOB NAME  			: " + jobName);
         System.out.println("BUILD REVISION  	: " + buildRevision);
         System.out.println("BRANCH/TAG	 		: " + buildTag);
-        System.out.println("BUILD URL	 		: " + buildURL);
+        System.out.println("BUILD URL	 	: " + buildURL);
         System.out.println("APPLICATION NAME 	: " + name);
 
         ReleaseNotesWikiHttpUpdate relnotes = new ReleaseNotesWikiHttpUpdate();
         try
         {
         	relnotes.updateWiki(name,CHNG,jobName,buildRevision,buildTag,buildURL,listener);
+        	listener.getLogger().println("");
+        	listener.getLogger().println("------ RELEASE INFO CAPTURE FINISHED ------");
+        	listener.getLogger().println("");
         }catch(Exception e){
         	e.printStackTrace();
         }
@@ -176,7 +194,7 @@ public class ReleaseInfoCapturePublisher extends Recorder {
             if (value.length() < 4)
                 return FormValidation.warning("Isn't the name too short?");
             if (b)
-            	return FormValidation.error("No special characters allowed");
+            	return FormValidation.error("No special characters are allowed");
             return FormValidation.ok();
         }
 

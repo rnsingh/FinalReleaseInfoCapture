@@ -52,8 +52,8 @@ public class GenerateParentPage {
 		         + "</ac:structured-macro>" + "</p>";
 		String json = "{\"type\":\"page\",\"title\":\"" + parentpage + "\",\"space\":{\"key\":\"ds\"},\"body\":{\"storage\":{\"value\":\"" + text + "\",\"representation\":\"storage\"}}}";
 	
-			
 			System.out.println("INFO : Checking Parent Page Existence");
+			listener.getLogger().println("");
 			listener.getLogger().println("INFO : Checking Parent Page Existence");
 			String testpagecoder = URLEncoder.encode(parentpage, ENCODING);
 			HttpGet getPageRequest = new HttpGet(getContentRestUrl(testpagecoder,"ds")); // Search in space "ds"
