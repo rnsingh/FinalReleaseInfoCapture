@@ -69,6 +69,7 @@ public class ReleaseInfoCapturePublisher extends Recorder {
         String buildTag;
         String buildRevision;
         String buildURL;
+        Integer result = 0;
         
         EnvVars envVars = new EnvVars();
         envVars = build.getEnvironment(listener);
@@ -135,16 +136,35 @@ public class ReleaseInfoCapturePublisher extends Recorder {
         System.out.println("APPLICATION NAME 	: " + name);
 
         ReleaseNotesWikiHttpUpdate relnotes = new ReleaseNotesWikiHttpUpdate();
-        try
-        {
-        	relnotes.updateWiki(name,CHNG,jobName,buildRevision,buildTag,buildURL,listener);
+        if (name != null){
+			Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
+			Matcher m = p.matcher(name);
+			boolean b = m.find();
+			if(b){
+				listener.error("Provided Application name contains special characters");
+				return false;
+			}
+			else if (name.length() == 0)
+			{
+				listener.error("Provided Application name is empty");
+				return false;
+			}
+			else
+			{
+				result = relnotes.updateWiki(name,CHNG,jobName,buildRevision,buildTag,buildURL,listener);
+				if (result != 0)
+		        	{
+		        		return false;
+		        		
+		        	}
+				}
+					
+			}
+        	
         	listener.getLogger().println("");
         	listener.getLogger().println("------ RELEASE INFO CAPTURE FINISHED ------");
         	listener.getLogger().println("");
-        }catch(Exception e){
-        	e.printStackTrace();
-        }
-        return true;
+        	return true;
     }
 
     @Override
@@ -176,7 +196,7 @@ public class ReleaseInfoCapturePublisher extends Recorder {
             if (value.length() < 4)
                 return FormValidation.warning("Isn't the name too short?");
             if (b)
-            	return FormValidation.warning("Avoid special characters to keep release notes url readable");
+            	return FormValidation.error("No special characters allowed");
             return FormValidation.ok();
         }
 
