@@ -72,9 +72,7 @@ public class ReleaseInfoCapturePublisher extends Recorder {
         
         EnvVars envVars = new EnvVars();
         envVars = build.getEnvironment(listener);
-        Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
-    	Matcher m = p.matcher(name);
-    	boolean b = m.find();
+
     	
         jobName = envVars.get("JOB_NAME");
         
@@ -116,22 +114,6 @@ public class ReleaseInfoCapturePublisher extends Recorder {
 
         CHNG = envVars.get("CHNG");
         
-        if (CHNG == null || name == null)
-        {
-        	System.out.println("Provided inputs are empty or incorrect");
-        	listener.error("Provided inputs are empty or incorrect");
-        	listener.finished(Result.FAILURE);
-            return false;
-        }else if(b)
-        {
-        	System.out.println("No special characters are allowed");
-        	listener.error("No special characters are allowed");
-        	listener.finished(Result.FAILURE);
-            return false;
-        }
-        else
-        {
-
         listener.getLogger().println("");
         listener.getLogger().println("------ RELEASE INFO CAPTURE STARTED ------");
         listener.getLogger().println("");
@@ -143,6 +125,7 @@ public class ReleaseInfoCapturePublisher extends Recorder {
         listener.getLogger().println("BUILD URL		: " + buildURL);
         listener.getLogger().println("APPLICATION NAME 	: " + name);
         listener.getLogger().println("");
+        
         
         System.out.println("CHNG          			: " + CHNG);
         System.out.println("JOB NAME  			: " + jobName);
@@ -162,7 +145,6 @@ public class ReleaseInfoCapturePublisher extends Recorder {
         	e.printStackTrace();
         }
         return true;
-        }
     }
 
     @Override
@@ -194,7 +176,7 @@ public class ReleaseInfoCapturePublisher extends Recorder {
             if (value.length() < 4)
                 return FormValidation.warning("Isn't the name too short?");
             if (b)
-            	return FormValidation.error("No special characters are allowed");
+            	return FormValidation.warning("Avoid special characters to keep release notes url readable");
             return FormValidation.ok();
         }
 

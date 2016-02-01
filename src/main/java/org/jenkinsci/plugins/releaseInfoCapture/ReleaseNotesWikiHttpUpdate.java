@@ -23,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import hudson.model.BuildListener;
+import hudson.model.Result;
 
 public class ReleaseNotesWikiHttpUpdate {
 
@@ -46,7 +47,6 @@ public class ReleaseNotesWikiHttpUpdate {
 		final String expand = URLEncoder.encode(StringUtils.join(expansions, ","), ENCODING);
 		return String.format("%s/rest/api/content/%s?expand=%s&os_authType=basic&os_username=%s&os_password=%s",BASE_URL, contentId, expand,URLEncoder.encode(USERNAME, ENCODING),URLEncoder.encode(PASSWORD, ENCODING));
  }
-	
 	public void updateWiki(String appname, String CHNG, String jobName, String buildRevision, String buildTag, String buildURL, BuildListener listener) throws ClientProtocolException, IOException {
 		// TODO Auto-generated method stub
 		
@@ -61,6 +61,7 @@ public class ReleaseNotesWikiHttpUpdate {
 		String pattern2 = "</tbody>";
 		String get1pageObj = null;
 		HttpEntity get1pageEntity = null;
+		boolean b = false;
 		
 		String text = "<body>"
 				+ "<h1>" + appname + " Release Info</h1>"
@@ -77,6 +78,13 @@ public class ReleaseNotesWikiHttpUpdate {
 		         + "<ac:structured-macro ac:name='gallery'>"
 		         + "<ac:parameter ac:name='columns'>1</ac:parameter>"
 		         + "</ac:structured-macro>" + "</p>";
+		
+		/*if(appname != null){
+			Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
+			Matcher m = p.matcher(appname);
+			b = m.find();
+
+		}*/
 		
 		GenerateParentPage gpp = new GenerateParentPage();
 		Long parentid = gpp.GetParentPage(listener);
@@ -233,6 +241,13 @@ public class ReleaseNotesWikiHttpUpdate {
 				e.printStackTrace();
 			}
 	}
+		else if (size > 10)
+		{
+			System.err.println("Provided Application name is empty");
+			listener.error("Provided Application name is empty");
+			listener.getLogger().println("Please contact MT Release Engineering(mtre@searshc.com) Team");
+        	listener.finished(Result.FAILURE);
+		}
 	else
 	{
 		System.out.println("INFO : Status Code 200");
