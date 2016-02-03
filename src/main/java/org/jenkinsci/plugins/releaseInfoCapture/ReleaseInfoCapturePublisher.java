@@ -69,13 +69,20 @@ public class ReleaseInfoCapturePublisher extends Recorder {
         String buildTag;
         String buildRevision;
         String buildURL;
+        String buildNumber;
+        String buildTimestamp;
         Integer result = 0;
+        Result pr = build.getResult();
         
         EnvVars envVars = new EnvVars();
         envVars = build.getEnvironment(listener);
 
     	
         jobName = envVars.get("JOB_NAME");
+        buildNumber = envVars.get("BUILD_NUMBER");
+        buildTimestamp = envVars.get("BUILD_TIMESTAMP");
+        
+        String buildTimer = buildNumber + "_" + buildTimestamp;
         
         // Get git/svn commit revision
         if(envVars.containsKey("GIT_COMMIT"))
@@ -114,26 +121,6 @@ public class ReleaseInfoCapturePublisher extends Recorder {
         }
 
         CHNG = envVars.get("CHNG");
-        
-        listener.getLogger().println("");
-        listener.getLogger().println("------ RELEASE INFO CAPTURE STARTED ------");
-        listener.getLogger().println("");
-        
-        listener.getLogger().println("CHNG			: " + CHNG);
-        listener.getLogger().println("JOB NAME  		: " + jobName);
-        listener.getLogger().println("BUILD REVISION  	: " + buildRevision);
-        listener.getLogger().println("BRANCH/TAG	 	: " + buildTag);
-        listener.getLogger().println("BUILD URL		: " + buildURL);
-        listener.getLogger().println("APPLICATION NAME 	: " + name);
-        listener.getLogger().println("");
-        
-        
-        System.out.println("CHNG          			: " + CHNG);
-        System.out.println("JOB NAME  			: " + jobName);
-        System.out.println("BUILD REVISION  	: " + buildRevision);
-        System.out.println("BRANCH/TAG	 		: " + buildTag);
-        System.out.println("BUILD URL	 	: " + buildURL);
-        System.out.println("APPLICATION NAME 	: " + name);
 
         ReleaseNotesWikiHttpUpdate relnotes = new ReleaseNotesWikiHttpUpdate();
         if (name != null){
@@ -149,9 +136,36 @@ public class ReleaseInfoCapturePublisher extends Recorder {
 				listener.error("Provided Application name is empty");
 				return false;
 			}
+			else if (pr!=null && pr.isWorseOrEqualTo(Result.UNSTABLE))
+			{
+				listener.getLogger().println("Skipping post build task Generate Release Notes .Job status is worse than unstable : " + build.getResult());
+				return false;
+			}
 			else
 			{
-				result = relnotes.updateWiki(name,CHNG,jobName,buildRevision,buildTag,buildURL,listener);
+				listener.getLogger().println("");
+		        listener.getLogger().println("------ RELEASE INFO CAPTURE STARTED ------");
+		        listener.getLogger().println("");
+		        
+		        listener.getLogger().println("CHNG			: " + CHNG);
+		        listener.getLogger().println("JOB NAME  		: " + jobName);
+		        listener.getLogger().println("BUILD NO_TIMESTAMP  		: " + buildTimer);
+		        listener.getLogger().println("BUILD REVISION  	: " + buildRevision);
+		        listener.getLogger().println("BRANCH/TAG	 	: " + buildTag);
+		        listener.getLogger().println("BUILD URL		: " + buildURL);
+		        listener.getLogger().println("APPLICATION NAME 	: " + name);
+		        listener.getLogger().println("");
+		        
+		        
+		        System.out.println("CHNG          			: " + CHNG);
+		        System.out.println("JOB NAME  			: " + jobName);
+		        System.out.println("BUILD NO_TIMESTAMP  		: " + buildTimer);
+		        System.out.println("BUILD REVISION  	: " + buildRevision);
+		        System.out.println("BRANCH/TAG	 		: " + buildTag);
+		        System.out.println("BUILD URL	 	: " + buildURL);
+		        System.out.println("APPLICATION NAME 	: " + name);
+		        
+				result = relnotes.updateWiki(name,CHNG,jobName,buildTimer,buildRevision,buildTag,buildURL,listener);
 				if (result != 0)
 		        	{
 		        		return false;

@@ -3,7 +3,10 @@ package org.jenkinsci.plugins.releaseInfoCapture;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,7 +50,7 @@ public class ReleaseNotesWikiHttpUpdate {
 		final String expand = URLEncoder.encode(StringUtils.join(expansions, ","), ENCODING);
 		return String.format("%s/rest/api/content/%s?expand=%s&os_authType=basic&os_username=%s&os_password=%s",BASE_URL, contentId, expand,URLEncoder.encode(USERNAME, ENCODING),URLEncoder.encode(PASSWORD, ENCODING));
  }
-	public Integer updateWiki(String appname, String CHNG, String jobName, String buildRevision, String buildTag, String buildURL, BuildListener listener) throws ClientProtocolException, IOException {
+	public Integer updateWiki(String appname, String CHNG, String jobName, String buildTimer, String buildRevision, String buildTag, String buildURL, BuildListener listener) throws ClientProtocolException, IOException {
 		// TODO Auto-generated method stub
 		
 		DefaultHttpClient client = new DefaultHttpClient();
@@ -70,15 +73,23 @@ public class ReleaseNotesWikiHttpUpdate {
 				+ "<tr>"
 				+ "<th>CHNG</th>"
 				+ "<th>JOB NAME</th>"
+				+ "<th>BUILD NO_TIMESTAMP</th>"
 				+ "<th>REVISION</th>"
 				+ "<th>TAG/BRANCH</th>"
 				+ "<th>SOURCE</th>"
+				+ "<th>RELEASE DATE</th>"
 				+ "</tr>"
 				+ "</table>" + "</body>" + "<p> </p>"
 		         + "<p> </p>" + "<p>"
 		         + "<ac:structured-macro ac:name='gallery'>"
 		         + "<ac:parameter ac:name='columns'>1</ac:parameter>"
 		         + "</ac:structured-macro>" + "</p>";
+
+		DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+		Date date = new Date();
+		String reportDate = dateFormat.format(date);
+		System.out.println("Date : " + reportDate);
+		listener.getLogger().println("INFO : Release Date - " + reportDate);
 		
 
 		GenerateParentPage gpp = new GenerateParentPage();
@@ -173,12 +184,12 @@ public class ReleaseNotesWikiHttpUpdate {
 					JSONObject putpage = new JSONObject(get1pageObj);
 					// List
 					ArrayList<String[]> releaseinfodata = new ArrayList<String[]>();
-					releaseinfodata.add(new String[] { CHNG, jobName, buildRevision, buildTag, buildURL });
+					releaseinfodata.add(new String[] { CHNG, jobName, buildTimer, buildRevision, buildTag, buildURL, reportDate });
 					String middleText = "";
 					for (String[] data : releaseinfodata) {
 						middleText = middleText + "<tr>" + "<td>" + data[0] + "</td>"
 				             + "<td>" + data[1] + "</td>" + "<td>" + data[2]
-				             + "</td>" + "<td>" + data[3] + "</td>" + "<td>" + data[4] + "</td>" +"</tr>";
+				             + "</td>" + "<td>" + data[3] + "</td>" + "<td>" + data[4] + "</td>" + "<td>" + data[5] + "</td>" + "<td>" + data[6] + "</td>" +"</tr>";
 					}
 				 
 					// Below data will be added to the above id found page
@@ -285,17 +296,17 @@ public class ReleaseNotesWikiHttpUpdate {
 		 JSONObject putpage = new JSONObject(get1pageObj);
 		// List
 		 ArrayList<String[]> releaseinfodata = new ArrayList<String[]>();
-		 releaseinfodata.add(new String[] { CHNG, jobName, buildRevision, buildTag, buildURL });
+		 releaseinfodata.add(new String[] { CHNG, jobName, buildTimer, buildRevision, buildTag, buildURL, reportDate });
 		 String middleText = "";
 		 for (String[] data : releaseinfodata) {
 		     middleText = middleText + "<tr>" + "<td>" + data[0] + "</td>"
 		             + "<td>" + data[1] + "</td>" + "<td>" + data[2]
-		             + "</td>" + "<td>" + data[3] + "</td>" + "<td>" + data[4] + "</td>" + "</tr>";
+		             + "</td>" + "<td>" + data[3] + "</td>" + "<td>" + data[4] + "</td>" + "<td>" + data[5] + "</td>" + "<td>" + data[6] + "</td>" + "</tr>";
 		 }
 		 
 		 // Below data will be added to the above id found page
 		 String puttext = "<body>"
-				 + "<h1>" + appname + "</h1>"
+				 + "<h1>" + appname + " Release Info</h1>"
 		         + "<table>"
 				 + tableoutput + middleText + "</table>" + "</body>" + "<p> </p>"
 				         + "<p> </p>" + "<p>"
