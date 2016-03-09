@@ -36,9 +36,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.*;
 
+// import org.apache.bcel.generic.LUSHR;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
 
 /**
  *
@@ -165,13 +167,27 @@ public class ReleaseInfoCapturePublisher extends Recorder {
 		        System.out.println("BUILD URL	 	: " + buildURL);
 		        System.out.println("APPLICATION NAME 	: " + name);
 		        
-				result = relnotes.updateWiki(name,CHNG,jobName,buildTimer,buildRevision,buildTag,buildURL,listener);
+				/* result = relnotes.updateWiki(name,CHNG,jobName,buildTimer,buildRevision,buildTag,buildURL,listener);
 				if (result != 0)
 		        	{
 		        		return false;
 		        		
 		        	}
+				else 
+				{*/
+					try {
+						 
+						String jobNameInDb = jobName + "-" + buildNumber;
+						ReleaseInfoCaptureDbUtility dbUtil = new ReleaseInfoCaptureDbUtility();
+						dbUtil.updateDb(jobNameInDb,CHNG,name,buildURL,buildTag,buildRevision,buildNumber,buildTimer,"wiki");
+						
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
 				}
+				// }
 					
 			}
         	
