@@ -168,14 +168,14 @@ public class ReleaseInfoCapturePublisher extends Recorder {
 		        System.out.println("APPLICATION NAME 	: " + name);
 		        
 				result = relnotes.updateWiki(name,CHNG,jobName,buildTimer,buildRevision,buildTag,buildURL,listener);
-				/*
+			
 				if (result != 0)
-		        	{
+		        	
 		        		return false;
 		        		
 		        	}
 				else 
-				{*/
+				
 					try {
 						 
 						String jobNameInDb = jobName + "-" + buildNumber;
@@ -188,7 +188,7 @@ public class ReleaseInfoCapturePublisher extends Recorder {
 						e.printStackTrace();
 					}
 				}
-				// }
+				
 					
 			}
         	
