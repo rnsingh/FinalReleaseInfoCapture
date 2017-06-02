@@ -93,7 +93,8 @@ public class ReleaseNotesWikiHttpUpdate {
 		
 
 		GenerateParentPage gpp = new GenerateParentPage();
-		Long parentid = gpp.GetParentPage(listener);
+		// Long parentid = gpp.GetParentPage(listener);
+		Long parentid = 327685;
 		
 		//String json = "{\"type\":\"page\",\"title\":\"" + testpage + "\",\"space\":{\"key\":\"ds\"},\"body\":{\"storage\":{\"value\":\"" + text + "\",\"representation\":\"storage\"}}}";
 		String json = "{\"type\":\"page\",\"ancestors\":[{\"type\":\"page\",\"id\":" + parentid + "}],\"title\":\"" + testpage + "\",\"space\":{\"key\":\"ds\"},\"body\":{\"storage\":{\"value\":\"" + text + "\",\"representation\":\"storage\"}}}";
