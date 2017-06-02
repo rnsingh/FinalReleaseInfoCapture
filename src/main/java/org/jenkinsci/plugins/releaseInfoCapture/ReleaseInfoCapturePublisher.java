@@ -167,7 +167,8 @@ public class ReleaseInfoCapturePublisher extends Recorder {
 		        System.out.println("BUILD URL	 	: " + buildURL);
 		        System.out.println("APPLICATION NAME 	: " + name);
 		        
-				/* result = relnotes.updateWiki(name,CHNG,jobName,buildTimer,buildRevision,buildTag,buildURL,listener);
+				result = relnotes.updateWiki(name,CHNG,jobName,buildTimer,buildRevision,buildTag,buildURL,listener);
+				/*
 				if (result != 0)
 		        	{
 		        		return false;
