@@ -20,7 +20,7 @@ import hudson.model.BuildListener;
 public class GenerateParentPage {
 
 	private static final String BASE_URL = "https://rsingh.atlassian.net";
-	private static final String USERNAME = "rnsingh";
+	private static final String USERNAME = "rohitnarayansingh@gmail.com";
 	private static final String PASSWORD = "Singh8450";
 	private static final String ENCODING = "utf-8";
 
