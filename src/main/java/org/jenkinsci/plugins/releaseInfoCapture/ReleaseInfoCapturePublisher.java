@@ -170,6 +170,7 @@ public class ReleaseInfoCapturePublisher extends Recorder {
 				result = relnotes.updateWiki(name,CHNG,jobName,buildTimer,buildRevision,buildTag,buildURL,listener);
 			
 				if (result != 0)
+				{
 		        	
 		        		return false;
 		        		
