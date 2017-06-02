@@ -30,9 +30,9 @@ import hudson.model.Result;
 
 public class ReleaseNotesWikiHttpUpdate {
 
-	private static final String BASE_URL = "https://alim4azad.atlassian.net/wiki";
-	private static final String USERNAME = "azadal";
-	private static final String PASSWORD = "azadal@2012";
+	private static final String BASE_URL = "https://rsingh.atlassian.net";
+	private static final String USERNAME = "rnsingh";
+	private static final String PASSWORD = "Singh8450";
 	private static final String ENCODING = "utf-8";
  
 	private static String postContentRestUrl() throws UnsupportedEncodingException {
